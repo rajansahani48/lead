@@ -61,6 +61,7 @@ class CampaignController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
+
     //for showing who is working in particular campaign
     public function show($id)
     {

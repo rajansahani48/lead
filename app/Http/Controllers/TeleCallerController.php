@@ -103,9 +103,12 @@ class TeleCallerController extends Controller
      */
     public function destroy($id)
     {
+        //if current telecaller have pending leads then you can't delete this telecaller so if will execute
         $getLeads=Lead::where('telecaller_id',$id)->whereNotIn('status',['converted'])->get()->toArray();
         if(count($getLeads)>0)
             return response()->json(['deleteTelecallerError' => 'You can"t Delete this Telecaller due to incomplete task!!']);
+
+        //if telecaller don't have pending leads then it will simply delete this telecaller and bridge table usercampaign
         else {
             User::findOrFail($id)->delete();
             UserCampaign::where('telecaller_id',$id)->delete();
@@ -182,7 +185,3 @@ class TeleCallerController extends Controller
             return redirect()->back()->with('passwordWarning','Please Enter Valid Old Password!');
     }
 }
-
-
-
-
