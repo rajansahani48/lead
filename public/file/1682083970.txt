@@ -1,0 +1,6 @@
+rajan ,rajan@gmail.com,9425
+Noel,noel@gmail.com,97246
+krunal,krunal@gmail.com,123
+khushi,khushi@gmail.com,147
+pc,pc@gmail.com,478
+bipin,bipin@gmail.com,369
