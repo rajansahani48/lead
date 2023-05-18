@@ -27,3 +27,8 @@ span{
 .modal-content {
     width: 128% !important;
 }
+
+.required:after {
+    content: " *";
+    color: red;
+}

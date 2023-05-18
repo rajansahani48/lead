@@ -19,7 +19,6 @@ class UserCampaignController extends Controller
             $getAssignedTelecaller = UserCampaign::where('campaign_id', $campaign_id)->where('telecaller_id', '!=',$telecaller_id)->pluck('telecaller_id')->toArray();
             $getAssignedTelecaller = collect($getAssignedTelecaller)->unique()->toArray();
             $telecallerIndex = 0;
-            // dd($getLeads);
             $assignedLeads=[];
             foreach ($getLeads as $keys => $values) {
                 Lead::create(['campaign_id' => $campaign_id, 'telecaller_id' => $getAssignedTelecaller[$telecallerIndex], 'name' => $values['name'], 'email' => $values['email'], 'phone' => $values['phone'], 'status' => $values['status']]);

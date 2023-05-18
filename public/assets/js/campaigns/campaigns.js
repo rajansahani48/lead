@@ -181,7 +181,17 @@ $(document).on('click', '#import', function (event) {
         success: function (data) {
             if (data.choosePhone) {
                 alert("Phone Details Is Required")
-            } else {
+            }
+            else if (data.blankCsv) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: 'Csv File is Empty!',
+                }).then(function () {
+                    location.reload();
+                });
+            }
+            else {
                 $('#csvModal').modal('hide');
                 Swal.fire(
                     'Inserted Successfully!',
@@ -334,33 +344,33 @@ $(".editCampaign").click(function (event) {
 });
 
 //Update Campaign
-$(".updateCampaign").click(function(event) {
+$(".updateCampaign").click(function (event) {
     event.preventDefault();
     campaign_id = $(this).data('campaign_id');
     // console.log(campaign_id);
     $.ajax({
-        url:"campaign/" + campaign_id,
+        url: "campaign/" + campaign_id,
         data: $("#editCampaignForm").serializeArray(),
-        method:"PUT",
+        method: "PUT",
         dataType: 'json',
         headers: {
-            'X-CSRF-Token':$('#editcsrf').val()
+            'X-CSRF-Token': $('#editcsrf').val()
         },
-        success: function(data) {
-            if(data.campaignUpdated)
-            {
+        success: function (data) {
+            if (data.campaignUpdated) {
                 Swal.fire({
                     position: 'center-center',
                     icon: 'success',
                     title: 'Campaign Updated Successfully!',
                     showConfirmButton: false,
                     timer: 1500
-                }).then(function() {
+                }).then(function () {
                     $('#editCampaignModal').modal('hide');
-                }).then(function(){
+                }).then(function () {
                     location.reload();
                 });
             }
+
         }
     });
 });

@@ -20,12 +20,11 @@ class CampaignController extends Controller
     //this will execute with many relationship as mentioned
     public function index()
     {
-        $columns = ['name', 'email', 'phone'];
         $camp = Campaign::with('hasManyLeads', 'PendingLeads', 'ProccedLeads', 'CampaignHasUser')->paginate(5);
         $campaingUser = User::where('role', 'telecaller')->orderBy('name')->get();
         $data = [
             'camp' => $camp,
-            'columns' => $columns,
+            'columns' => ['name', 'email', 'phone'],
             'campaingUser' => $campaingUser
         ];
         return view('campaigns.campaigns')->with($data);

@@ -25,8 +25,7 @@ class StoreTelecallerRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required|max:50',
-            // 'email' => 'required|unique:users,email,NULL,id,deleted_at,NULL',
+            'name' => 'required|max:100',
             'email' => 'required|email',
             'phone'=>'required|min:10',
             'password'=>'required|same:confirmpassword|min:8',
@@ -39,7 +38,6 @@ class StoreTelecallerRequest extends FormRequest
         return [
             'name.required' => "The Name Can't  be null",
             'email.required' => "The Email Can't  be null",
-            // 'email.unique' => " User Already Exists",
             'phone.required' => " The Phone Can't  be null",
             'address.max' =>"You Can't enter more than 200 character",
             'password.required' => " The Password Can't  be null",

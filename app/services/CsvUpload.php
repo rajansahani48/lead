@@ -6,7 +6,7 @@ class CsvUpload
     public function save($file)
     {
         $filename = $file->getClientOriginalName();
-        $file->move($this->storedLocation($filename), $filename);
+        $file->move($this->fileLocation(), $filename);
         $leads = [];
         if (($open = fopen($this->fileLocation($filename), "r")) !== FALSE) {
             while (($data = fgetcsv($open, 200, ",")) !== FALSE) {
@@ -14,24 +14,13 @@ class CsvUpload
             }
             fclose($open);
         }
-        return $leads;
-    }
-    public function deleteFile($filename)
-    {
-
         if (\File::exists($this->fileLocation($filename)))
             \File::delete($this->fileLocation($filename));
-
+        return $leads;
     }
-    public function fileLocation($filename)
+    public function fileLocation($filename=null)
     {
         return storage_path("file/$filename");
     }
-
-    public function storedLocation($filename)
-    {
-        return storage_path("file");
-    }
-
 }
 ?>

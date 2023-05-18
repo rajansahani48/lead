@@ -15,8 +15,7 @@
                         <h3><span class="badge badge-secondary title" style="margin-left: 150;" >Campaing's List</span></h3>
                         <select class="form-select" name="campaign_id" id="leadusermodal"
                             style="display:flex;margin: 5px;  ">
-                            {{-- <option value="">@if (isset($campaigName)) {{$campaigName}}  @else Select @endif</option> --}}
-                            <option value=""> Select </option>
+                            <option value="">@if (isset($campaigName)) {{$campaigName[0]}}  @else Select @endif</option>
                             @foreach ($finalArray as $key => $val)
                                 <option value="{{ $key }}">{{ $val }}</option>
                             @endforeach

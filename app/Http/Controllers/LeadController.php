@@ -13,20 +13,19 @@ class LeadController extends Controller
     public function index(Request $request)
     {
         $campaigndetail = UserCampaign::where('telecaller_id', auth()->user()->id)->pluck('campaign_id')->toArray();
-        $campaigndetail = \DB::table('campaigns')->whereIn('id', $campaigndetail)->get()->toArray();
+        $campaigndetail = Campaign::whereIn('id', $campaigndetail)->get()->toArray();
         $count = 0;
         $storCampaignId = [];
         $storCampaignName = [];
         foreach ($campaigndetail as $key => $value) {
-            $storCampaignId[$count] = $value->id;
-            $storCampaignName[$count] = $value->campaign_name;
+            $storCampaignId[$count] = $value['id'];
+            $storCampaignName[$count] = $value['campaign_name'];
             $count++;
         }
         $finalArray = [];
         foreach ($storCampaignId as $key => $value) {
             $finalArray[$value] = $storCampaignName[$key];
         }
-
         if (count($request->toArray()) > 0) {
             if ($request->campaign_id && $request->status)
                 $leadsDetails = Lead::where('campaign_id', '=', $request->campaign_id)->where('telecaller_id', '=', auth()->user()->id)->where('status', '=', $request->status)->paginate(10);
@@ -34,15 +33,13 @@ class LeadController extends Controller
                 $leadsDetails = Lead::where('telecaller_id', '=', auth()->user()->id)->where('status', '=', $request->status)->paginate(10);
             else
                 return view('telecallermodule.showassignleads')->with('finalArray', $finalArray);
-            $campaigName = Campaign::where('id', $request->campaign_id)->pluck('campaign_name')->toArray();
-            $campaignId = $request->campaign_id;
-            $status = $request->status;
+            $campaigName = Campaign::where('id', $request->campaign_id)->pluck('campaign_name');
             $data = [
                 'leadsDetails' => $leadsDetails,
-                'campaignId' => $campaignId,
+                'campaignId' => $request->campaign_id,
                 'finalArray' => $finalArray,
                 'campaigName' => $campaigName,
-                'status' => $status,
+                'status' => $request->status,
             ];
             return view('telecallermodule.showassignleads')->with($data);
         } else
@@ -68,7 +65,7 @@ class LeadController extends Controller
     public function uploadLead(Request $request)
     {
         $getStorePhones = Lead::where('campaign_id', $request->campaign_id)->pluck('phone')->toArray();
-        if (collect($getStorePhones)->contains($request->phone) === true)
+        if (collect($getStorePhones)->contains($request->phone))
             return response()->json(['leadAlert' => 'Lead Already Exists!']);
         else {
             Lead::create(['campaign_id' => $request->campaign_id, 'telecaller_id' => $request->leadusermodal, 'name' => $request->name, 'email' => $request->email, 'phone' => $request->phone]);

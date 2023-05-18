@@ -147,7 +147,6 @@ class TeleCallerController extends Controller
     //after changing the status of leads
     public function selectstatus(Request $request)
     {
-        // dd($request->toArray());
         if ($request->status === 'converted') {
             Lead::where('id', $request->lead_id)->update(['status' => 'converted']);
             $conversionCost = Campaign::where('id', $request->campaignId)->pluck('conversion_cost')->toArray();

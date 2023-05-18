@@ -20,8 +20,6 @@ class CsvController extends Controller
         {
             if ($_FILES['file']['name'] != '') {
                 $file_array = explode(".", $_FILES['file']['name']);
-
-                //storing the extension
                 $extension = end($file_array);
 
                 //if file type is csv then only it will go in if
@@ -53,10 +51,9 @@ class CsvController extends Controller
     //importing csv file
     public function import(Request $request,CsvUpload $csvupload)
     {
-
         $leadColumnArray = explode(",", $request->storLeadColumnName);
         $csvColumnArray = explode(",", $request->storCsvColumnName);
-
+        $flage=true;
         //if phone is not selected
         if($leadColumnArray[0]!="phone" &&$leadColumnArray[1]!="phone" && $leadColumnArray[2]!="phone")
             return response()->json(['choosePhone' => 'Phone Field is necessary']);
@@ -68,6 +65,15 @@ class CsvController extends Controller
         }
         //storing  file and reading file
         $leads=$csvupload->save($request->file);
+        if($request->csvfirstRow=="true"){
+            $startIndex=0;
+            $flage=false;
+        }
+        else
+            $startIndex=1;
+
+        if(count($leads)==1 && $flage===true)
+            return response()->json(['blankCsv' => 'Csv File is Empty']);
 
         $count = count($leads);
         $storeArray = [];
@@ -77,17 +83,8 @@ class CsvController extends Controller
         $telecallerList=UserCampaign::where('campaign_id',$request->campaign_id)->pluck('telecaller_id')->toArray();
         $telecallerList=User::whereIn('id',$telecallerList)->orderBy('name')->pluck('id')->toArray();
         $telecallerIndex = 0;
-        $flage=true;
 
         //if your csv file don't have column name then flage will false
-        if($request->csvfirstRow=="true")
-        {
-            $startIndex=0;
-            $flage=false;
-        }
-        else
-            $startIndex=1;
-
         //csv mapping
         for ($i = $startIndex; $i < $count; $i++) {
             foreach ($leads[$i] as $leadIndex => $leadVal) {
@@ -100,17 +97,13 @@ class CsvController extends Controller
             $storeArray['telecaller_id'] = $telecallerList[$telecallerIndex];
 
             $getStorePhones=Lead::where('campaign_id',$request->campaign_id)->pluck('phone')->toArray();
-            $collection = collect($getStorePhones);
-            if($collection->contains($storeArray['phone'])==true)
+            if(collect($getStorePhones)->contains($storeArray['phone']))
                 $countFaildArray++;
             else {
                     Lead::create($storeArray);
                     $telecallerIndex++;
                     $telecallerIndex = isset($telecallerList[$telecallerIndex]) ? $telecallerIndex : 0;
             }
-
-            // deleting the stored file
-            $this->csvupload->deleteFile($request->file->getClientOriginalName());
         }
 
         if(!$flage){
