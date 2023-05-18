@@ -67,6 +67,11 @@
                     {{ session('msgUserExists') }}
                 </div>
             @endif
+            @if (session('validValueValidation'))
+                <div class="alert alert-danger">
+                    {{ session('validValueValidation') }}
+                </div>
+            @endif
             @yield('main-content')
             @include('footer')
         </div>

@@ -6,7 +6,7 @@ $("#campaign_name").keyup(function () {
     else
         $("#txterr").html("");
 });
-$("#formsvalue").validate({
+$("#editCampaignForm").validate({
     rules: {
         campaign_name: {
             required: true,

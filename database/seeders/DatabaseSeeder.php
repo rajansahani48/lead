@@ -14,14 +14,6 @@ class DatabaseSeeder extends Seeder
     public function run()
     {
         // \App\Models\User::factory(10)->create();
-        \DB::table('users')->insert([
-            'name' =>'Rajan',
-            'email' =>'rajan@gmail.com',
-            'password' =>Hash::make('123'),
-            'phone' =>'9725085433',
-            'country_code' =>'3960001',
-            'address'=>'Valsad',
-            'role'=>'admin',
-        ]);
+
     }
 }

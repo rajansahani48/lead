@@ -1,8 +1,3 @@
-// $.ajaxSetup({
-//     headers: {
-//         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-//     }
-// });
 $(".deleteBtn").click(function (e) {
     e.preventDefault();
     Swal.fire({
@@ -16,17 +11,21 @@ $(".deleteBtn").click(function (e) {
     }).then((result) => {
         if (result.isConfirmed) {
             telecaller_id = $(this).data('telecaller_id');
-            var id = telecaller_id;
-            var url = "{{ route('deletetelecaller', ':id') }}";
-            url = url.replace(':id', id);
+            campaign_id=$(this).data('campaign_id');
+            deleteTelecallerUrl = '/deletetelecaller/' +campaign_id +'/'+telecaller_id;
+
+            console.log(deleteTelecallerUrl);
             $.ajax({
-                url: url,
+                url: deleteTelecallerUrl,
                 type: "delete",
                 data: telecaller_id,
                 dataType: 'json',
-                // contentType: false,
-                // cache: false,
-                // processData: false,
+                contentType: false,
+                cache: false,
+                processData: false,
+                headers: {
+                    'X-CSRF-Token':$('#deletecsrf').val()
+                },
                 success: function (data) {
                     if (data.deleteTelecallerError) {
                         Swal.fire({

@@ -1,0 +1,16 @@
+#heading{
+    margin-top:20px;
+    background-color:#d8dde2;
+    font-family: serif;
+}
+#btntelecaller {
+    float: right;
+    margin-right: 10px;
+}
+#back {
+    margin-top: 15px;
+    margin-left: 5px;
+}
+.container {
+    margin-top: 40px;
+}

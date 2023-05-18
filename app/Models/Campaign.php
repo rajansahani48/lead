@@ -20,7 +20,7 @@ class Campaign extends Model
     //campaign has many telecaller
     public function CampaignHasUser()
     {
-        return $this->belongsToMany(User::class,'usercampaign','campaign_id','telecaller_id','id');
+        return $this->belongsToMany(User::class,'usercampaign','campaign_id','telecaller_id','id')->withTimestamps();
     }
 
     //one campagin has many leads

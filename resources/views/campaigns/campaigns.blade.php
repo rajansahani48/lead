@@ -1,51 +1,28 @@
 {{-- Campagin list  --}}
 @extends('master')
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css"
+    integrity="sha512-nMNlpuaDPrqlEls3IX/Q56H36qvBASwb3ipuo3MxeWbsQB1881ox0cRv7UPTgBlriqoynt35KjEwgGUeUXIPnw=="crossorigin="anonymous"
+    referrerpolicy="no-referrer" />
+<link href="{{ asset('css/campaign/campaigns.css') }}" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.1/css/bootstrap-select.css" />
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.1/js/bootstrap-select.min.js"></script>
 <style>
-    .item {
-        text-align: center;
-    }
-
-    #heading {
-        margin-top: 15px;
-        background-color: #d8dde2;
-        font-family: serif;
-    }
-
-    #btntelecaller {
-        float: right;
-        margin-right: 10px;
-    }
-
-    #file {
-        width: 50%;
-    }
-
-    #csv {
-        width: 20%;
-        padding-left: 60px;
-    }
-
-    #deletebtn {
-        margin: -15px;
-    }
-
-    #action {
-        padding-left: 90px;
-    }
-
-    .required:after {
-        content: " *";
-        color: red;
+    .select2-container {
+        z-index: 5000 !important;
     }
 </style>
-
 @section('main-content')
     <center>
         <h2 id="heading">Campaign's Details</h2>
     </center>
     <main class="m-4">
-        <a href="{{ route('campaign.create') }}"><button type="button" id="btntelecaller" class="btn btn-primary">Add
-                Campaign</button></a>
+        <button type="button" class="btn btn-primary" id="btncampaign" data-bs-toggle="modal"
+            data-bs-target="#createCampaign">
+            Add Campaign
+        </button>
         <table class="table table-bordered table-striped table-hover" style="margin-top: 60px;">
             <thead>
                 <tr class="item">
@@ -75,12 +52,13 @@
                             <div class="row" id="upload_area" style="display: inline-block;width: 75;">
                                 <form method="POST" class="upload_form" enctype="multipart/form-data">
                                     @csrf
+                                    <input type="hidden" id="deletecsrf" name="deletecsrf" value="{{ csrf_token() }}" />
                                     <label for="inputcsv{{ $val->id }}">
                                         <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/34/Microsoft_Office_Excel_%282019%E2%80%93present%29.svg/826px-Microsoft_Office_Excel_%282019%E2%80%93present%29.svg.png"
                                             style="height: 30px; width: 30px; display:inline-block;margin-left:-15px"
                                             data-toggle="tooltip" data-placement="top" title="Upload CSV" />
                                     </label>
-                                    <input class="form-control file" type="file" name="file"
+                                    <input class="form-control file" type="file" name="file" accept=".csv"
                                         id="inputcsv{{ $val->id }}" data-campaign_id={{ $val->id }}
                                         style="display: none" />
                                 </form>
@@ -93,9 +71,10 @@
                                     data-campaign_id={{ $val->id }}><i class="fa fa-trash" aria-hidden="true"
                                         data-toggle="tooltip" data-placement="top" title="Delete Campaign"></i></button>
                             </form>
-                            <a href="{{ route('campaign.edit', [$val->id]) }}" class="btn btn-primary"><i
-                                    class="fas fa-edit" data-toggle="tooltip" data-placement="top"
-                                    title="Edit Campaign"></i></a>
+                            <a href="javascript(0):;" class="btn btn-primary editCampaign"
+                                data-campaign_id={{ $val->id }}><i class="fas fa-edit " data-toggle="tooltip"
+                                    data-placement="top" title="Edit Campaign"></i></a>
+
                             <a href="{{ route('campaign.show', [$val->id]) }}" class="btn btn-secondary"><i
                                     class="fa-solid fa-eye" data-toggle="tooltip" data-placement="top"
                                     title="Working Telecaller"></i></a>
@@ -206,276 +185,172 @@
                 </div>
             </div>
         </div>
-    </main>
 
+        {{-- Modal for Campaign creation --}}
+        <div class="modal fade" id="createCampaign" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+            aria-labelledby="staticBackdropLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="staticBackdropLabel">Add Campaign</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form method="POST" id="campaignFormData">
+                            @csrf
+                            <div class="form-floating mb-3">
+                                <input class="form-control" type="text" placeholder="name" name="campaign_name"
+                                    id="campaign_name" maxlength="50" />
+                                <label class="required">Campaign name</label>
+                                <span id="txterr"></span>
+                                <span class="text-danger">
+                                    @error('campaign_name')
+                                        {{ $message }}
+                                    @enderror
+                                </span>
+                            </div>
+                            <div class="form-floating mb-3">
+                                <input class="form-control" type="text" placeholder="name" name="campaign_desc"
+                                    maxlength="120" />
+                                <label>Campaign description</label>
+                                <span class="text-danger">
+                                    @error('campaign_desc')
+                                        {{ $message }}
+                                    @enderror
+                                </span>
+                            </div>
+                            <div class="form-floating mb-3">
+                                <input class="form-control" type="number" placeholder="name" name="cost_per_lead"
+                                    id="cost_per_lead" />
+                                <label class="required">Cost Per Lead</label>
+                                <div class="errorTxt"></div>
+                                <span class="text-danger">
+                                    @error('cost_per_lead')
+                                        {{ $message }}
+                                    @enderror
+                                </span>
+                            </div>
+                            <div class="form-floating mb-3">
+                                <input class="form-control" type="number" placeholder="name" name="conversion_cost"
+                                    id="conversion_cost" />
+                                <label class="required">Conversion Cost</label>
+                                <span class="text-danger">
+                                    @error('conversion_cost')
+                                        {{ $message }}
+                                    @enderror
+                                </span>
+                            </div>
+                            <label class="required" style="margin-top: 10px;">Select Telecaller</label>
+                            <select class="selectpicker" multiple data-live-search="true" name="telecaller_id[]"
+                                style="margin-left: 100px" style="margin-left: 15px;">
+                                @foreach ($campaingUser as $val)
+                                    <option value="{{ $val->id }}">{{ $val->name }}</option>
+                                @endforeach
+                            </select>
+                            <span class="text-danger">
+                                @error('telecaller_id')
+                                    {{ $message }}
+                                @enderror
+                            </span>
+                            <div class="mt-4 mb-0">
+                                <div class="d-grid">
+                                    <button type="submit" class="btn btn-primary btn-block createCampaign">Create
+                                        Campaign</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {{-- Edit Campaign --}}
+        <div class="modal fade" id="editCampaignModal" data-bs-backdrop="static" data-bs-keyboard="false"
+            tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="staticBackdropLabel">Edit Campaign</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form method="POST" id="editCampaignForm">
+                            @csrf
+                            <input type="hidden" name="_method" value="PUT">
+                            <input type="hidden" id="editcsrf" name="editcsrf" value="{{ csrf_token() }}" />
+                            <input type="hidden" name="campaign_id" id="editcampaign_id" />
+                            <div class="form-floating mb-3">
+                                <input class="form-control" type="text" name="campaign_name"
+                                    id="editcampaign_name" />
+                                <label for="inputEmail">Campaign name</label>
+                                <span id="txterr"></span>
+                                <span class="text-danger">
+                                    @error('campaign_name')
+                                        {{ $message }}
+                                    @enderror
+                                </span>
+                            </div>
+                            <div class="form-floating mb-3">
+                                <input class="form-control" type="text" name="campaign_desc"
+                                    id="editcampaign_desc" />
+                                <label for="inputEmail">Campaign description</label>
+                            </div>
+                            <div class="form-floating mb-3">
+                                <input class="form-control" type="number" name="cost_per_lead"
+                                    id="editcost_per_lead" />
+                                <label for="inputEmail">Cost Per Lead</label>
+                                <span class="text-danger">
+                                    @error('cost_per_lead')
+                                        {{ $message }}
+                                    @enderror
+                                </span>
+                            </div>
+                            <div class="form-floating mb-3">
+                                <input class="form-control" type="number" name="conversion_cost"
+                                    id="editconversion_cost" />
+                                <label for="inputEmail">Conversion Cost</label>
+                                <span class="text-danger">
+                                    @error('conversion_cost')
+                                        {{ $message }}
+                                    @enderror
+                                </span>
+                            </div>
+                            <label class="required" style="margin-top: 10px;">Select Telecaller</label>
+                            <select class="js-example-placeholder-multiple js-states form-control" multiple="multiple"
+                                name="telecaller_id[]" id="edittelecaller_id" style="width: 300px;">
+                            </select>
+                            <div class="mt-4 mb-0">
+                                <div class="d-grid">
+                                    <button type="submit" class="btn btn-primary btn-block updateCampaign">Update
+                                        Campaign</button>
+                                </div>
+                            </div>
+                        </form>
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
     <script>
-        //for csv uploading
         var dbColumn = <?php echo json_encode($columns); ?>;
         var file = '';
         var campaign_id = '';
-
         $(document).ready(function() {
-                $(".file").on('change', function(e) {
-                        campaign_id = $(this).data('campaign_id');
-                        var formData = new FormData();
-                file = $(this)[0].files[0];
-                formData.append('file', file);
-                formData.append('campaign_id', campaign_id);
-                $.ajax({
-                    url: "upload",
-                    method: "POST",
-                    data: formData,
-                    dataType: 'json',
-                    contentType: false,
-                    cache: false,
-                    headers: {
-                        'X-CSRF-Token': "{{ csrf_token() }}"
-                    },
-                    processData: false,
-                    success: function(data) {
-                        if (data.wrongfile) {
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Oops...',
-                                text: 'Please Choose Only CSV file!',
-                            }).then(function() {
-                                location.reload();
-                            });
-                        } else if (data.telecallerEmpty) {
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Oops...',
-                                text: 'There Is No More Telecaller In This Campaign Please Add Telecaller!',
-                            }).then(function() {
-                                location.reload();
-                            });
-                        } else if (data.blankCsv) {
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Oops...',
-                                text: 'Csv File is Empty!',
-                            }).then(function() {
-                                location.reload();
-                            });
-                        } else {
-                            $("#csvModal").modal('show');
-                            $("#campaign_id").val(campaign_id);
-                            var html = "<option value=''>select</option>";
-                            $.each(data.csvheader, function(val, text) {
-                                html += "<option value=" + val + ">" + text +
-                                    "</option>";
-                            });
-                            $.each(dbColumn, function(key, value) {
-                                $('#mySelect_' + value).html(html);
-                            });
-                        }
-                    }
-                });
-            });
-
-            //validation on lead table so user can't choose same column twice
-            $(document).on('change', '.set_column_data', function() {
-                var selectedOption = $(this);
-                var column_name = selectedOption.val();
-                console.log(column_name);
-
-                var column_number = selectedOption.data('column_number');
-                console.log(column_number);
-
-                $('.set_column_data').each(function() {
-                    if ((column_number != $(this).data('column_number')) && (column_name == $(this)
-                            .val())) {
-                        selectedOption.val('');
-                        alert('You have already define ' + column_name + ' column');
-                    }
-                });
-            });
-
-            //validation on csv so user can't choose same column twice
-            $(document).on('change', '.set_csv_data', function() {
-                var selectedOption = $(this);
-                var column_name = selectedOption.val();
-                var column_number = selectedOption.data('column_number');
-                $('.set_csv_data').each(function() {
-                    if ((column_number != $(this).data('column_number')) && (column_name == $(this)
-                            .val())) {
-                        selectedOption.val('');
-                        alert('You have already define this column');
-                    }
-                });
-            });
-
-            //storing csv file's headers(columns)
-            $(document).on('click', '#import', function(event) {
-                event.preventDefault();
-                var csvData = $("#csvform").serializeArray();
-                var storCsvColumnName = [];
-                $('.set_csv_data').each(function() {
-                    if ($(this).val() == undefined || $(this).val() == '') {
-                        storCsvColumnName.push('');
-                    } else {
-                        storCsvColumnName.push($(this).val());
-                    }
-                });
-                // storing lead table's columns
-                var storLeadColumnName = [];
-                $('.set_column_data').each(function() {
-                    if ($(this).val() == undefined || $(this).val() == '') {
-                        storLeadColumnName.push('');
-                    } else {
-                        storLeadColumnName.push($(this).val());
-                    }
-                });
-
-                //import calling after csv file validation for csv uploading into database
-                $cb = $('input#csvFirstRow');
-                $csvfirstRow = ($cb.prop('checked'));
-                var csvfirstRow = $csvfirstRow;
-                var formData = new FormData();
-                formData.append('file', file);
-                formData.append('storCsvColumnName', storCsvColumnName);
-                formData.append('storLeadColumnName', storLeadColumnName);
-                formData.append('campaign_id', campaign_id);
-                formData.append('csvfirstRow', csvfirstRow);
-                $.ajax({
-                    url: "import",
-                    method: "POST",
-                    data: formData,
-                    dataType: 'json',
-                    contentType: false,
-                    cache: false,
-                    headers: {
-                        'X-CSRF-Token': "{{ csrf_token() }}"
-                    },
-                    processData: false,
-                    success: function(data) {
-                        if (data.choosePhone) {
-                            alert("Phone Details Is Required")
-                        } else {
-                            $('#csvModal').modal('hide');
-                            Swal.fire(
-                                'Inserted Successfully!',
-                                " Total Inserted Record " + data.rec + " Out Of " + data
-                                .count,
-                                'success'
-                            ).then(function() {
-                                location.reload();
-                            });
-                        }
-                    }
-                })
-
-            });
-
-            //FOR ADDING A SINGLE LEAD FROM USER
-            $(".addlead").click(function() {
-                campaign_id = $(this).data('campaign_id');
-                $.ajax({
-                    url: "get-campaign-user/" + campaign_id,
-                    method: "get",
-                    dataType: 'json',
-                    success: function(data) {
-                        $("#leadModal").modal('show');
-                        $("#campaign_id").val(campaign_id);
-                        var html = "<option value=''>Select Telecaller</option>";
-                        $.each(data.usersArray, function(val, text) {
-                            html += "<option value=" + text.id + ">" + text.name +
-                                "</option>";
-                        });
-                        $('#leadusermodal').html(html);
-                    }
-                });
-            });
-
-            //UPLOADING SINGLE LEAD FROM USER
-            $("#storelead").click(function(event) {
-                $('#campaigns_id').val(campaign_id);
-                event.preventDefault();
-                $.ajax({
-                    url: 'upload-lead',
-                    method: "POST",
-                    data: $("#leadsdetails").serializeArray(),
-                    dataType: 'json',
-                    headers: {
-                        'X-CSRF-Token': "{{ csrf_token() }}"
-                    },
-                    success: function(data) {
-                        if (data.leadAlert) {
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Oops...',
-                                text: 'Lead Already Exists!',
-                            })
-                        }
-                        if (data.LeadMessage) {
-                            Swal.fire({
-                                position: 'center-center',
-                                icon: 'success',
-                                title: 'Lead Inserted Successfully!',
-                                showConfirmButton: false,
-                                timer: 1500
-                            }).then(function() {
-                                location.reload();
-                            });
-                        }
-                        $('#leadModal').modal('hide');
-                    }
-                })
-            });
-
-            //deleting campaign make sure that campaign don't have pending leads
-            $(".deleteBtn").click(function(e) {
-                e.preventDefault();
-                Swal.fire({
-                    title: 'Are you sure?',
-                    text: "You won't be able to get this data Again!",
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#3085d6',
-                    cancelButtonColor: '#d33',
-                    confirmButtonText: 'Yes, delete it!'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        campaign_id = $(this).data('campaign_id');
-                        var id = campaign_id;
-                        var url = "{{ route('campaign.destroy', ':id') }}";
-                        url = url.replace(':id', id);
-                        console.log(campaign_id);
-                        $.ajax({
-                            url: url,
-                            type: "DELETE",
-                            data: campaign_id,
-                            dataType: 'json',
-                            contentType: false,
-                            cache: false,
-                            headers: {
-                                'X-CSRF-Token': "{{ csrf_token() }}"
-                            },
-                            processData: false,
-                            success: function(data) {
-                                //if campaign have pending leads then it will not allow to delete it
-                                if (data.deleteCampaignError) {
-                                    Swal.fire({
-                                        icon: 'error',
-                                        title: 'Oops...',
-                                        text: "You Can't Delete this Campaign Due To Incomplete Task!!",
-                                    })
-                                } //if campaing don't have pending leads  then only u can delete
-                                else {
-                                    Swal.fire(
-                                        'Deleted!',
-                                        'Campaign has been deleted.',
-                                        'success'
-                                    ).then(function() {
-                                location.reload();
-                            });
-                                }
-                            }
-                        })
-                    }
-                })
+            $(".js-example-placeholder-multiple").select2({
+                placeholder: "Select a Telecaller"
             });
         });
     </script>
-
+    <script src="{{ asset('assets/js/campaigns/campaigns.js') }}"></script>
+    <script src="{{ asset('assets/js/campaigns/editcampaign.js') }}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"
+        integrity="sha512-2ImtlRlf2VVmiGZsjm9bEyhjGW4dU7B6TNwh/hx/iSByxNENtj3WVE6o/9Lj4TJeVXPi4bnOIMXFIJJAeufa0A=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 @endsection

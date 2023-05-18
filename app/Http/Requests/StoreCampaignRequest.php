@@ -27,7 +27,7 @@ class StoreCampaignRequest extends FormRequest
             'campaign_name' => 'required|regex:(^([a-zA-z]))',
             'cost_per_lead'=>'required|numeric',
             'conversion_cost'=>'required|numeric',
-            // 'telecaller_id'=>'required'
+            'campaign_desc' =>'max:120'
         ];
     }
     public function messages()
@@ -39,6 +39,9 @@ class StoreCampaignRequest extends FormRequest
             'cost_per_lead.numeric' => "Please enter only number",
             'conversion_cost.required' => "The conversion cost  Can't  be null",
             'conversion_cost.numeric' => "Please enter only number",
+            'cost_per_lead.max' => "You can't enter more than 5 digit",
+            'conversion_cost.max' => "You can't enter more than 5 digit",
+            'campaign_desc.max' => "You Can't enter more than 120 character"
         ];
     }
 }

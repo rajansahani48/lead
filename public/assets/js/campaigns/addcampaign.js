@@ -10,14 +10,14 @@
         rules: {
             campaign_name: {
                 required: true,
-                maxlength: 20
+                maxlength: 50
             },
             cost_per_lead: {
                 required: true,
             },
             conversion_cost: {
                 required: true,
-            },
+           },
             file: {
                 required: true,
             },

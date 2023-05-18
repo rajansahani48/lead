@@ -1,41 +1,19 @@
 {{-- List of Telecaller --}}
 @extends('master')
-<style>
-    .item {
-        text-align: center;
-    }
-
-    #heading {
-        margin-top: 15px;
-        background-color: #d8dde2;
-        font-family: serif;
-    }
-
-    #btntelecaller {
-        float: right;
-        margin-right: 20px;
-        margin-top: 20px;
-    }
-
-    #btnBack {
-        float: left;
-    }
-
-    .container {
-        margin-top: 60px;
-    }
-</style>
-
-<section>
-</section>
+<link href="{{ asset('css/telecaller/telecaller.css') }}" rel="stylesheet" />
 @section('main-content')
     <main>
         <center>
             <h2 id="heading">Telecaller's Details</h2>
         </center>
         {{-- for creating new telecaller --}}
-        <a href="{{ route('telecaller.create') }}"><button type="button" id="btntelecaller" class="btn btn-primary">Add
-                Telecaller</button></a>
+        {{-- <a href="{{ route('telecaller.create') }}"><button type="button" id="btntelecaller" class="btn btn-primary">Add
+                Telecaller</button></a> --}}
+
+        <button type="button" class="btn btn-primary" id="btntelecaller" data-bs-toggle="modal"
+            data-bs-target="#createTelecaller">
+            Add Telecaller
+        </button>
         <table class="table table-bordered table-striped table-hover" style="margin-top: 80px;">
             <thead>
                 <tr class="item">
@@ -48,37 +26,30 @@
                 </tr>
             </thead>
             <tbody>
-                    @foreach ($obj as $val)
-                        <tr class="item">
-                            <td>{{ $val->name }}</td>
-                            <td>{{ $val->email }}</td>
-                            <td>{{ $val->phone }}</td>
-                            <td>{{ $val->country_code }}</td>
-                            <td>{{ $val->address }}</td>
-                            <td>
-                                <div class="row">
-                                    <div class="col-3">
-                                        <form method="POST" action="{{ route('telecaller.destroy', [$val->id]) }}"
-                                            style="display: inline-block:   margin-left: -20px;">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="btn btn-danger deleteBtn"
-                                                data-telecaller_id={{ $val->id }} style="margin-left: 19px;"><i
-                                                    class="fa fa-trash"aria-hidden="true"></i>
-                                            </button>
-                                        </form>
-                                    </div>
-                                    <div class="col-2" style="margin-top: 20px;margin-right: -20;"><a
-                                            href="{{ route('telecaller.edit', [$val->id]) }}" class="btn btn-primary"><i
-                                                class="fas fa-edit"></i></a></div>
-                                    <div class="col-3" style="margin-top: 20px;"><a
-                                            href="{{ route('telecaller.show', [$val->id]) }}" class="btn btn-secondary"><i
-                                                class="fa-solid fa-eye"></i></a></div>
+                @if(isset($obj))
+                @foreach ($obj as $val)
+                    <tr class="item">
+                        <td>{{ $val->name }}</td>
+                        <td>{{ $val->email }}</td>
+                        <td>{{ $val->phone }}</td>
+                        <td>{{ $val->country_code }}</td>
+                        <td>{{ $val->address }}</td>
+                        <td>
+                            <input type="hidden" id="deletecsrf" name="deletecsrf" value="{{ csrf_token() }}" />
+                            <a href="javascript:;" data-telecaller_id={{ $val->id }} class="btn btn-danger deleteBtn"
+                                style="height: 33px;"><i class="fa fa-trash"aria-hidden="true"></i></a>
+                            {{-- <a href="{{ route('telecaller.edit', [$val->id]) }}" class="btn btn-primary"
+                                style="height: 33px;"><i class="fas fa-edit"></i></a>  --}}
 
-                                </div>
-                            </td>
-                        </tr>
-                    @endforeach
+                            <a href="javascript(0):;" data-telecaller_id={{ $val->id }}
+                                class="btn btn-primary editTelecaller" style="height: 33px;" data-bs-toggle="modal"><i
+                                    class="fas fa-edit"></i></a>
+                            <a href="{{ route('telecaller.show', [$val->id]) }}" class="btn btn-secondary"
+                                style="height: 33px;"><i class="fa-solid fa-eye"></i></a>
+                        </td>
+                    </tr>
+                @endforeach
+                @endif
             </tbody>
         </table>
         <div class="row">
@@ -86,55 +57,203 @@
         </div>
     </main>
 
-    <script>
-        $(document).ready(function() {
-            $(".deleteBtn").click(function(e) {
-                e.preventDefault();
-                Swal.fire({
-                    title: 'Are you sure?',
-                    text: "You won't be able to get this data Again!",
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#3085d6',
-                    cancelButtonColor: '#d33',
-                    confirmButtonText: 'Yes, delete it!'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        telecaller_id = $(this).data('telecaller_id');
-                        var id = telecaller_id;
-                        var url = "{{ route('telecaller.destroy', ':id') }}";
-                        url = url.replace(':id', id);
-                        $.ajax({
-                            url: url,
-                            type: "DELETE",
-                            dataType: 'json',
-                            contentType: false,
-                            cache: false,
-                            headers: {
-                                'X-CSRF-Token': "{{ csrf_token() }}"
-                            },
-                            processData: false,
-                            success: function(data) {
-                                if (data.deleteTelecallerError) {
-                                    Swal.fire({
-                                        icon: 'error',
-                                        title: 'Oops...',
-                                        text: "You Can't Delete this Telecaller Due To Incomplete Task!!",
-                                    })
-                                } else {
-                                    Swal.fire(
-                                        'Deleted!',
-                                        'Telecaller has been deleted.',
-                                        'success'
-                                    ).then(function() {
-                                        location.reload();
-                                    });
-                                }
-                            }
-                        })
-                    }
-                })
-            });
-        })
-    </script>
+    {{-- Modal for creating Telecaller --}}
+    <div class="modal fade" id="createTelecaller" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+        aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="staticBackdropLabel">Add Telecaller</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form method="POST" id="telecallerFormData">
+                        @csrf
+                        <div class="form-floating mb-3">
+                            <input class="form-control" type="text" placeholder="name" name="name" id="name"
+                                value="{{ old('name') }}" />
+                            <label class="required">Name</label><span id="txterr"></span>
+                            <span class="text-danger">
+                                @error('name')
+                                    {{ $message }}
+                                @enderror
+                            </span>
+                            <span class="text-danger">
+                                <span id="errorName"></span>
+                            </span>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input class="form-control" type="text" placeholder="name" name="phone"
+                                value="{{ old('phone') }}" />
+                            <label class="required">Phone</label>
+                            <span class="text-danger">
+                                @error('phone')
+                                    {{ $message }}
+                                @enderror
+                            </span>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input class="form-control" type="text" placeholder="name" name="country_code"
+                                value="{{ old('country_code') }}" />
+                            <label>Country Code</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input class="form-control" type="text" placeholder="name" name="address"
+                                value="{{ old('address') }}" />
+                            <label>Address</label>
+                            <span class="text-danger">
+                                @error('address')
+                                    {{ $message }}
+                                @enderror
+                            </span>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input class="form-control" type="email" placeholder="name@example.com" name="email"
+                                id="email" value="{{ old('email') }}" />
+                            <label class="required">Email address</label><span id="txterremail"></span>
+                            <span class="text-danger">
+                                @error('email')
+                                    {{ $message }}
+                                @enderror
+                            </span>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <div class="form-floating mb-3 mb-md-0">
+                                    <input class="form-control" id="password" type="password"
+                                        placeholder="Create a password" name="password" value="{{ old('password') }}" />
+                                    <label for="inputPassword" class="required">Password</label>
+                                    <span class="text-danger">
+                                        @error('password')
+                                            {{ $message }}
+                                        @enderror
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating mb-3 mb-md-0">
+                                    <input class="form-control" id="confirmpassword" type="password"
+                                        placeholder="Confirm password" name="confirmpassword"
+                                        value="{{ old('confirmpassword') }}" />
+                                    <label for="inputPasswordConfirm" class="required">Confirm Password</label>
+                                    <span class="text-danger">
+                                        @error('confirmpassword')
+                                            {{ $message }}
+                                        @enderror
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-4 mb-0">
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-primary btn-block addTelecaller">Create
+                                    Account</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {{-- Modal for Edit Telecaller --}}
+    <div class="modal fade" id="editTelecallerModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+        aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="staticBackdropLabel">Edit Telecaller</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form method="POST" id="editTelecallerForm">
+                        @csrf
+                        <input type="hidden" name="_method" value="PUT">
+                        <input type="hidden" id="editcsrf" name="editcsrf" value="{{ csrf_token() }}" />
+                        <input type="hidden" name="id" id="editid" />
+                        <div class="form-floating mb-3">
+                            <input class="form-control" type="text" name="name" id="editname" />
+                            <label class="required">Name</label><span id="txterr"></span>
+                            <span class="text-danger">
+                                @error('name')
+                                    {{ $message }}
+                                @enderror
+                            </span>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input class="form-control" type="text"  name="phone" id="editphone" />
+                            <label>Phone</label>
+                            <span class="text-danger">
+                                @error('phone')
+                                    {{ $message }}
+                                @enderror
+                            </span>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input class="form-control" type="text" name="countrycode" id="editcountrycode" />
+                            <label>Country Code</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input class="form-control" type="text" name="address" id="editaddress">
+                            <label>Address</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input class="form-control" type="email"  id="editemail" name="email"
+                                 />
+                            <label class="required">Email address</label><span id="txterremail"></span>
+                            <span class="text-danger">
+                                @error('email')
+                                    {{ $message }}
+                                @enderror
+                            </span>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <div class="form-floating mb-3 mb-md-0">
+                                    <input class="form-control" id="inputPassword" type="password"
+                                        placeholder="Create a password" name="password" />
+                                    <label class="required">Password</label>
+                                    <span class="text-danger">
+                                        @error('password')
+                                            {{ $message }}
+                                        @enderror
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating mb-3 mb-md-0">
+                                    <input class="form-control" id="inputPasswordConfirm" type="password"
+                                        placeholder="Confirm password" name="confirmpassword" />
+                                    <label class="required">Confirm Password</label>
+                                    <span class="text-danger">
+                                        @error('confirmpassword')
+                                            {{ $message }}
+                                        @enderror
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-4 mb-0">
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-primary btn-block updateTelecaller">Update Account</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="{{ asset('assets/js/telecaller/telecaller.js') }}"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.1/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="{{ asset('vendor/jsvalidation/js/jsvalidation.js')}}"></script>
+    {!! JsValidator::formRequest('App\Http\Requests\StoreTelecallerRequest', '#telecallerFormData') !!}
+    {!! JsValidator::formRequest('App\Http\Requests\StoreTelecallerRequest', '#editTelecallerForm') !!}
 @endsection

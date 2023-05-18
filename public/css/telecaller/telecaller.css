@@ -1,0 +1,29 @@
+.item {
+    text-align: center;
+}
+
+#heading {
+    margin-top: 15px;
+    background-color: #d8dde2;
+    font-family: serif;
+}
+
+#btntelecaller {
+    float: right;
+    margin-right: 20px;
+    margin-top: 20px;
+}
+
+#btnBack {
+    float: left;
+}
+
+.container {
+    margin-top: 60px;
+}
+span{
+    color: red;
+}
+.modal-content {
+    width: 128% !important;
+}

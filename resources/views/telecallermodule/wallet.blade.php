@@ -7,7 +7,7 @@
 @section('main-content')
     <main>
 
-        <div class="container">
+    <div class="container">
             <div class="row">
                 <div class="col-xl-1 col-md-1 w-25">
                     <div class="card bg-secondary text-white mb-4">
@@ -24,48 +24,36 @@
                     </div>
                 </div>
             </div>
-        </div>
-
-        <div class="container">
-            <div class="card mb-4">
-                <div class="card-header">
-                    <center>
-                        <h4>Transaction History</h4>
-                    </center>
-                </div>
-                <div class="card-body">
-                    <table id="datatablesSimple">
-                        <thead>
-                            <tr class="item">
-                                <th scope="col">Date</th>
-                                <th scope="col">Description</th>
-                                <th scope="col">Rupees</th>
+         <div class="container">
+                <table class="table table-bordered table-striped table-hover" style="margin-left:-15px">
+                    <thead>
+                        <tr>
+                            <th scope="col">Date</th>
+                            <th scope="col">Description</th>
+                            <th scope="col">Rupees</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @php
+                            $count = 0;
+                        @endphp
+                        @foreach ($transaction as $key => $val)
+                            <tr style="height: 45px;">
+                                <td>{{ date('d-m-Y h:i:s', strtotime($val['created_at'])) }}</td>
+                                <td style="color:rgba(12, 13, 15, 0.562);font-weight:bolder;">Credited From Campaign
+                                    {{ $storCampaignName[$count] }}</td>
+                                <td style="color:green;font-weight:bolder;">+{{ $val['amount'] }}.{{ $paisa = '00' }}</td>
                             </tr>
-                        </thead>
-                        <tbody>
                             @php
-                                $count = 0;
+                                $count++;
                             @endphp
-                            @foreach ($transaction as $key => $val)
-                                <tr style="height: 45px;">
-                                    <td>{{ date('d-m-Y h:i:s', strtotime($val['created_at'])) }}</td>
-                                    <td>
-                                        Credited From Campaign
-                                        {{ $storCampaignName[$count] }}</td>
-                                    <td>
-                                        +{{ $val['amount'] }}.{{ $paisa = '00' }}
-                                    </td>
-                                </tr>
-                                @php
-                                    $count++;
-                                @endphp
-                            @endforeach
-                        </tbody>
-                    </table>
+                        @endforeach
+                    </tbody>
+                </table>
+                <div class="row">
+                    {{ $transaction->links() }}
                 </div>
             </div>
         </div>
-
-
     </main>
 @endsection

@@ -1,19 +1,6 @@
 {{-- Chnage Password For Both Module --}}
 @extends('master')
-<style>
-    form {
-        margin: 10px;
-    }
-
-    span {
-        color: red;
-    }
-
-    .required:after {
-        content: " *";
-        color: red;
-    }
-</style>
+<link href="{{ asset('css/telecaller/changepassword.css') }}" rel="stylesheet" />
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.1/js/bootstrap-select.min.js"></script>
 @section('main-content')
     <main>

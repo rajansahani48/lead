@@ -1,13 +1,14 @@
 <?php
 namespace App\Http\Controllers;
 use Illuminate\Http\Request;
-use App\Models\Campaign;
 use App\Models\Lead;
 use App\Models\User;
 use App\Models\UserCampaign;
+use App\services\CsvUpload;
 
 class CsvController extends Controller
 {
+    protected $csvupload;
     //uploadign csv file
     public function upload(Request $request)
     {
@@ -45,8 +46,12 @@ class CsvController extends Controller
         else
             return response()->json(['telecallerEmpty' => 'There is no more Telecaller in this campaign']);
     }
+    public function __construct(CsvUpload $csvupload)
+    {
+        $this->csvupload=$csvupload;
+    }
     //importing csv file
-    public function import(Request $request)
+    public function import(Request $request,CsvUpload $csvupload)
     {
 
         $leadColumnArray = explode(",", $request->storLeadColumnName);
@@ -62,15 +67,8 @@ class CsvController extends Controller
             $finalArray[$value] = $csvColumnArray[$key];
         }
         //storing  file and reading file
-        $filename = $request->file->getClientOriginalName();
-        $request->file->move(storage_path('file'), $filename);
-        $leads = [];
-        if (($open = fopen(storage_path() . "/file/$filename", "r")) !== FALSE) {
-            while (($data = fgetcsv($open, 200, ",")) !== FALSE) {
-                $leads[] = $data;
-            }
-            fclose($open);
-        }
+        $leads=$csvupload->save($request->file);
+
         $count = count($leads);
         $storeArray = [];
         $countFaildArray=0;
@@ -111,9 +109,8 @@ class CsvController extends Controller
                     $telecallerIndex = isset($telecallerList[$telecallerIndex]) ? $telecallerIndex : 0;
             }
 
-            //deleting the stored file
-            if(\File::exists(storage_path("file/$filename")))
-                \File::delete(storage_path("file/$filename"));
+            // deleting the stored file
+            $this->csvupload->deleteFile($request->file->getClientOriginalName());
         }
 
         if(!$flage){
@@ -124,6 +121,5 @@ class CsvController extends Controller
             $rec=($count-1)-$countFaildArray;
             return response()->json(['messgae' => 'imported successfully','rec'=>$rec,'count'=>$count-1]);
         }
-
     }
 }

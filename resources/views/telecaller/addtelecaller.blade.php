@@ -1,19 +1,6 @@
-{{-- Adding New Telecaller --}}
+{{-- Adding New Telecaller
 @extends('master')
-<style>
-    form {
-        margin: 10px;
-    }
-
-    span {
-        color: red;
-    }
-
-    .required:after {
-        content: " *";
-        color: red;
-    }
-</style>
+<link href="{{ asset('css/telecaller/addtelecaller.css') }}" rel="stylesheet" />
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.1/js/bootstrap-select.min.js"></script>
 @section('main-content')
     <div class="container">
@@ -46,6 +33,11 @@
             <div class="form-floating mb-3">
                 <input class="form-control" type="text" placeholder="name" name="address" value="{{ old('address') }}" />
                 <label>Address</label>
+                <span class="text-danger">
+                    @error('address')
+                        {{ $message }}
+                    @enderror
+                </span>
             </div>
             <div class="form-floating mb-3">
                 <input class="form-control" type="email" placeholder="name@example.com" name="email" id="email"
@@ -92,4 +84,5 @@
         </form>
     </div>
     <script src="{{ asset('assets/js/telecaller/telecaller.js') }}"></script>
-@endsection
+
+@endsection --}}

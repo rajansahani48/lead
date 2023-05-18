@@ -1,0 +1,42 @@
+.item {
+    text-align: center;
+}
+
+#heading {
+    margin-top: 15px;
+    background-color: #d8dde2;
+    font-family: serif;
+}
+
+#btncampaign {
+    float: right;
+    margin-right: 10px;
+}
+
+#file {
+    width: 50%;
+}
+
+#csv {
+    width: 20%;
+    padding-left: 60px;
+}
+
+#deletebtn {
+    margin: -15px;
+}
+
+#action {
+    padding-left: 90px;
+}
+
+.required:after {
+    content: " *";
+    color: red;
+}
+.modal-content {
+    width: 128% !important;
+}
+span{
+    color: red;
+}

@@ -25,8 +25,8 @@ class ChangePasswordRequest extends FormRequest
     {
         return [
                 'oldPassword' => 'required',
-                'newPassword' => 'required|same:newConfirmPassword',
-                'newConfirmPassword'=>'required|same:newPassword'
+                'newPassword' => 'required|same:newConfirmPassword|min:8',
+                'newConfirmPassword'=>'required|same:newPassword|min:8'
         ];
     }
     public function messages()
@@ -37,6 +37,8 @@ class ChangePasswordRequest extends FormRequest
             'newConfirmPassword.required' => " The Confirm Password is Required",
             'newPassword.same' => " The Password Confirmpassword must be same",
             'newConfirmPassword.same' => " The Password Confirmpassword must be same",
+            'newPassword.min' => " The Password should be minimum 8 character",
+            'newConfirmPassword.min' => " The Confirm Password should be minimum 8 character",
         ];
     }
 }

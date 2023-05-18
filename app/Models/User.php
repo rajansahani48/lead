@@ -52,7 +52,7 @@ class User extends Authenticatable
     //one telecaller can work in multiple campaign
     public function userHasCampaign()
     {
-        return $this->belongsToMany(Campaign::class,'usercampaign','campaign_id','telecaller_id','id');
+        return $this->belongsToMany(Campaign::class,'usercampaign','telecaller_id','campaign_id','id');
     }
 
     //one telecaller have many leads

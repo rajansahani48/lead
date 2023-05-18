@@ -1,19 +1,5 @@
 @extends('master')
-<style>
-    .container-fluid {
-        margin-top: 20px;
-    }
-
-    .form-group {
-        text-align: center;
-    }
-
-    #heading {
-        margin-top: 15px;
-        background-color: #d8dde2;
-        font-family: serif;
-    }
-</style>
+<link href="{{ asset('css/campaign/dashboardchart.css') }}" rel="stylesheet" />
 <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
 @section('main-content')
     <main>

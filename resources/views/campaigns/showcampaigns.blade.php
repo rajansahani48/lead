@@ -1,31 +1,29 @@
 {{-- for see the list of telecaller who is working in particular campaign --}}
 @extends('master')
-<style>
-        #heading{
-        margin-top:20px;
-        background-color:#d8dde2;
-        font-family: serif;
-    }
-    #btntelecaller {
-        float: right;
-        margin-right: 10px;
-    }
-    #back {
-        margin-top: 15px;
-        margin-left: 5px;
-    }
-    .container {
-        margin-top: 40px;
-    }
-</style>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css"
+    integrity="sha512-nMNlpuaDPrqlEls3IX/Q56H36qvBASwb3ipuo3MxeWbsQB1881ox0cRv7UPTgBlriqoynt35KjEwgGUeUXIPnw=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+<link href="{{ asset('css/campaign/showcampaigns.css') }}" rel="stylesheet" />
 @section('main-content')
     <main>
         <center>
-            <h2 id="heading">{{$campaignName[0]}}'s Telecallers</h2>
+            <h2 id="heading">{{ $campaignName[0] }}'s Telecallers</h2>
         </center>
         <a href="/campaign"><button type="button" class="btn btn-dark" id="back">Back</button></a>
 
-        <table  class="table table-bordered table-striped table-hover" style="margin-top: 60px;">
+        <select class="js-example-placeholder-multiple js-states form-control" multiple="multiple" name="telecaller_id[]"
+            id="edittelecaller_id">
+            <option value="WY">Wyoming</option>
+            <option value="AL">Alabama</option>
+            <option value="AL">labama</option>
+            <option value="WY">ming</option>
+            <option value="AL">ma</option>
+            <option value="WY">g</option>
+            <option value="WY">yong</option>
+            <option value="AL">lama</option>
+            <option value="WY">ying</option>
+        </select>
+        <table class="table table-bordered table-striped table-hover" style="margin-top: 60px;">
             <thead>
                 <tr>
                     <th scope="col">Sr</th>
@@ -50,8 +48,10 @@
                         <td>{{ $val->user->country_code }}</td>
                         <td>{{ $val->user->address }}</td>
                         <td>
-                            <a href="{{ route('deletetelecaller', [$val->id]) }}"><button type="submit" data-telecaller_id={{ $val->id }}
+                            <a href="javascript(0):;"><button type="submit" data-telecaller_id={{ $val->telecaller_id }}
+                                    data-campaign_id={{ $val->campaign_id }}
                                     class="btn btn-danger deleteBtn">Delete</button></a>
+                            <input type="hidden" id="deletecsrf" name="deletecsrf" value="{{ csrf_token() }}" />
                         </td>
                     </tr>
                 @endforeach
@@ -59,59 +59,15 @@
         </table>
         {{ $campid->links() }}
     </main>
-    {{-- <script src="{{ asset('assets/js/campaigns/showcampaign.js') }}"></script> --}}
     <script>
         $(document).ready(function() {
-            $(".deleteBtn").click(function(e) {
-                e.preventDefault();
-                Swal.fire({
-                    title: 'Are you sure?',
-                    text: "You won't be able to get this data Again!",
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#3085d6',
-                    cancelButtonColor: '#d33',
-                    confirmButtonText: 'Yes, delete it!'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        telecaller_id = $(this).data('telecaller_id');
-                        var id = telecaller_id;
-                        var url = "{{ route('deletetelecaller', ':id') }}";
-                        url = url.replace(':id', id);
-                        console.log(telecaller_id);
-                        $.ajax({
-                            url: url,
-                            type: "delete",
-                            data: telecaller_id,
-                            dataType: 'json',
-                            contentType: false,
-                            cache: false,
-                            headers: {
-                                'X-CSRF-Token': "{{ csrf_token() }}"
-                            },
-                            processData: false,
-                            success: function(data) {
-                                if (data.deleteTelecallerError) {
-                                    Swal.fire({
-                                        icon: 'error',
-                                        title: 'Oops...',
-                                        text: "You Can't Delete this Telecaller Due To Incomplete Task!!",
-                                    })
-                                } else {
-                                    Swal.fire(
-                                        'Deleted!',
-                                        'Telecaller has been deleted.',
-                                        'success'
-                                    ).then(function() {
-                                        location.reload();
-                                    });
-                                }
-                            }
-                        })
-                    }
-                })
+            $(".js-example-placeholder-multiple").select2({
+                placeholder: "Select a state"
             });
-        })
+        });
     </script>
+    <script src="{{ asset('assets/js/campaigns/showcampaign.js') }}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"
+        integrity="sha512-2ImtlRlf2VVmiGZsjm9bEyhjGW4dU7B6TNwh/hx/iSByxNENtj3WVE6o/9Lj4TJeVXPi4bnOIMXFIJJAeufa0A=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 @endsection
-

@@ -1,19 +1,6 @@
-{{-- Edit Telecaller  --}}
+{{-- Edit Telecaller
 @extends('master')
-<style>
-    form {
-        margin: 10px;
-    }
-
-    span {
-        color: red;
-    }
-
-    .required:after {
-        content: " *";
-        color: red;
-    }
-</style>
+<link href="{{ asset('css/telecaller/edittelcallerform.css') }}" rel="stylesheet" />
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.1/css/bootstrap-select.css" />
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
@@ -95,4 +82,4 @@
     </form>
 
     <script src="{{ asset('assets/js/telecaller/telecaller.js') }}"></script>
-@endsection
+@endsection --}}

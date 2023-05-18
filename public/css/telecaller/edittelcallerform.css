@@ -1,0 +1,12 @@
+form {
+    margin: 10px;
+}
+
+span {
+    color: red;
+}
+
+.required:after {
+    content: " *";
+    color: red;
+}
