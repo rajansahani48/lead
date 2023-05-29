@@ -6,10 +6,6 @@
         <center>
             <h2 id="heading">Telecaller's Details</h2>
         </center>
-        {{-- for creating new telecaller --}}
-        {{-- <a href="{{ route('telecaller.create') }}"><button type="button" id="btntelecaller" class="btn btn-primary">Add
-                Telecaller</button></a> --}}
-
         <button type="button" class="btn btn-primary" id="btntelecaller" data-bs-toggle="modal"
             data-bs-target="#createTelecaller">
             Add Telecaller
@@ -26,29 +22,27 @@
                 </tr>
             </thead>
             <tbody>
-                @if(isset($obj))
-                @foreach ($obj as $val)
-                    <tr class="item">
-                        <td>{{ $val->name }}</td>
-                        <td>{{ $val->email }}</td>
-                        <td>{{ $val->phone }}</td>
-                        <td>{{ $val->country_code }}</td>
-                        <td>{{ $val->address }}</td>
-                        <td>
-                            <input type="hidden" id="deletecsrf" name="deletecsrf" value="{{ csrf_token() }}" />
-                            <a href="javascript:;" data-telecaller_id={{ $val->id }} class="btn btn-danger deleteBtn"
-                                style="height: 33px;"><i class="fa fa-trash"aria-hidden="true"></i></a>
-                            {{-- <a href="{{ route('telecaller.edit', [$val->id]) }}" class="btn btn-primary"
-                                style="height: 33px;"><i class="fas fa-edit"></i></a>  --}}
-
-                            <a href="javascript(0):;" data-telecaller_id={{ $val->id }}
-                                class="btn btn-primary editTelecaller" style="height: 33px;" data-bs-toggle="modal"><i
-                                    class="fas fa-edit"></i></a>
-                            <a href="{{ route('telecaller.show', [$val->id]) }}" class="btn btn-secondary"
-                                style="height: 33px;"><i class="fa-solid fa-eye"></i></a>
-                        </td>
-                    </tr>
-                @endforeach
+                @if (isset($obj))
+                    @foreach ($obj as $val)
+                        <tr class="item">
+                            <td>{{ $val->name }}</td>
+                            <td>{{ $val->email }}</td>
+                            <td>{{ $val->phone }}</td>
+                            <td>{{ $val->country_code }}</td>
+                            <td>{{ $val->address }}</td>
+                            <td>
+                                <input type="hidden" id="deletecsrf" name="deletecsrf" value="{{ csrf_token() }}" />
+                                <a href="javascript:;" data-telecaller_id={{ $val->id }}
+                                    class="btn btn-danger deleteBtn" style="height: 33px;"><i
+                                        class="fa fa-trash"aria-hidden="true"></i></a>
+                                <a href="javascript(0):;" data-telecaller_id={{ $val->id }}
+                                    class="btn btn-primary editTelecaller" style="height: 33px;" data-bs-toggle="modal"><i
+                                        class="fas fa-edit"></i></a>
+                                <a href="{{ route('telecaller.show', [$val->id]) }}" class="btn btn-secondary"
+                                    style="height: 33px;"><i class="fa-solid fa-eye"></i></a>
+                            </td>
+                        </tr>
+                    @endforeach
                 @endif
             </tbody>
         </table>
@@ -178,19 +172,11 @@
                         <div class="form-floating mb-3">
                             <input class="form-control" type="text" name="name" id="editname" />
                             <label class="required">Name</label><span id="txterr"></span>
-                            <span class="text-danger">
-                                @error('name')
-                                    {{ $message }}
-                                @enderror
-                            </span>
                         </div>
                         <div class="form-floating mb-3">
-                            <input class="form-control" type="text"  name="phone" id="editphone" />
+                            <input class="form-control" type="text" name="phone" id="editphone" />
                             <label>Phone</label>
                             <span class="text-danger">
-                                @error('phone')
-                                    {{ $message }}
-                                @enderror
                             </span>
                         </div>
                         <div class="form-floating mb-3">
@@ -202,13 +188,9 @@
                             <label>Address</label>
                         </div>
                         <div class="form-floating mb-3">
-                            <input class="form-control" type="email"  id="editemail" name="email"
-                                 />
+                            <input class="form-control" type="email" id="editemail" name="email" />
                             <label class="required">Email address</label><span id="txterremail"></span>
                             <span class="text-danger">
-                                @error('email')
-                                    {{ $message }}
-                                @enderror
                             </span>
                         </div>
                         <div class="row mb-3">
@@ -218,9 +200,6 @@
                                         placeholder="Create a password" name="password" />
                                     <label class="required">Password</label>
                                     <span class="text-danger">
-                                        @error('password')
-                                            {{ $message }}
-                                        @enderror
                                     </span>
                                 </div>
                             </div>
@@ -230,16 +209,14 @@
                                         placeholder="Confirm password" name="confirmpassword" />
                                     <label class="required">Confirm Password</label>
                                     <span class="text-danger">
-                                        @error('confirmpassword')
-                                            {{ $message }}
-                                        @enderror
                                     </span>
                                 </div>
                             </div>
                         </div>
                         <div class="mt-4 mb-0">
                             <div class="d-grid">
-                                <button type="submit" class="btn btn-primary btn-block updateTelecaller">Update Account</button>
+                                <button type="submit" class="btn btn-primary btn-block updateTelecaller">Update
+                                    Account</button>
                             </div>
                         </div>
                     </form>
@@ -251,9 +228,9 @@
         </div>
     </div>
     <script src="{{ asset('assets/js/telecaller/telecaller.js') }}"></script>
-    {{-- <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.1/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="{{ asset('vendor/jsvalidation/js/jsvalidation.js')}}"></script>
     {!! JsValidator::formRequest('App\Http\Requests\StoreTelecallerRequest', '#telecallerFormData') !!}
-    {!! JsValidator::formRequest('App\Http\Requests\StoreTelecallerRequest', '#editTelecallerForm') !!} --}}
+    {!! JsValidator::formRequest('App\Http\Requests\StoreTelecallerRequest', '#editTelecallerForm') !!}
 @endsection
